@@ -24,7 +24,7 @@
         var rows = csv.split('\n').slice(1);
         rows.forEach(row => {
           var cols = row.split(',');
-          var name = cols[0]; // Assuming the first column is the name
+          var name = cols[3]; // Column with day of the event
           var lat = parseFloat(cols[1]); // Column 2 for latitude
           var lng = parseFloat(cols[2]); // Column 3 for longitude
           var startEvent = cols[4]; // Column 5 for start of the hail event
@@ -41,10 +41,10 @@
               this.openPopup();
               this.bindPopup(`
                 <b>${name}</b><br>
-                <b>Start of the hail event:</b> ${startEvent}<br>
-                <b>End of the hail event:</b> ${endEvent}<br>
-                <b>Max size of the hail stones:</b> ${maxHailSize}<br>
-                <b>Average size of the hail stones:</b> ${avgHailSize}
+                Start of the hail event: ${startEvent}<br>
+                End of the hail event: ${endEvent}<br>
+                Max size of the hail stones: ${maxHailSize}<br>
+                Average size of the hail stones: ${avgHailSize}
               `).openPopup();
             });
 
