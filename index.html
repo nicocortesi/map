@@ -16,17 +16,42 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQWctFSWDP197FzVZAhWRExO6ZQHTcuI6OsSXvqJQqq2kq4NOiCTHmYlDBrGefylo0HckY8sUV9pKaY/pub?gid=0&single=true&output=csv')
+    sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWctFSWDP197FzVZAhWRExO6ZQHTcuI6OsSXvqJQqq2kq4NOiCTHmYlDBrGefylo0HckY8sUV9pKaY/pub?gid=0&single=true&output=csv';
+
+    fetch(sheetURL)
       .then(response => response.text())
       .then(csv => {
         var rows = csv.split('\n').slice(1);
         rows.forEach(row => {
           var cols = row.split(',');
-          var lat = parseFloat(cols[1]);
-          var lng = parseFloat(cols[2]);
-          var name = cols[3];
+          var name = cols[0]; // Assuming the first column is the name
+          var lat = parseFloat(cols[1]); // Column 2 for latitude
+          var lng = parseFloat(cols[2]); // Column 3 for longitude
+          var startEvent = cols[4]; // Column 5 for start of the hail event
+          var endEvent = cols[5]; // Column 6 for end of the hail event
+          var maxHailSize = cols[6]; // Column 7 for max size of the hail stones
+          var avgHailSize = cols[7]; // Column 8 for average size of the hail stones
+
           if (!isNaN(lat) && !isNaN(lng)) {
-            L.marker([lat, lng]).addTo(map).bindPopup(name);
+            var marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(name);
+
+            // Display additional information on mouseover
+            marker.on('mouseover', function(e) {
+              this.openPopup();
+              this.bindPopup(`
+                <b>${name}</b><br>
+                <b>Start of the hail event:</b> ${startEvent}<br>
+                <b>End of the hail event:</b> ${endEvent}<br>
+                <b>Max size of the hail stones:</b> ${maxHailSize}<br>
+                <b>Average size of the hail stones:</b> ${avgHailSize}
+              `).openPopup();
+            });
+
+            marker.on('mouseout', function(e) {
+              this.closePopup();
+              this.bindPopup(name);
+            });
           }
         });
       });
